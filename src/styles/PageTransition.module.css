@@ -1,8 +1,17 @@
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+@keyframes fromBelow {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.page {
-  animation: fadeIn 0.35s ease both;
+@keyframes fromAbove {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.forward {
+  animation: fromBelow 0.5s ease backwards;
+}
+
+.back {
+  animation: fromAbove 0.5s ease backwards;
 }

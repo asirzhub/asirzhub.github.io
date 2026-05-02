@@ -5,11 +5,11 @@
 }
 
 .photoGridItem {
-  height: 280px;
-  margin: 10px;
-  overflow: hidden;
+  height: clamp(140px, 35vw, 280px);
+  margin: clamp(4px, 1.5vw, 10px);
   cursor: zoom-in;
   flex: 0 0 auto;
+  transition: transform 0.15s ease;
 }
 
 .photoGridItem img {
@@ -17,11 +17,13 @@
   width: auto;
   display: block;
   filter: brightness(0.85);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: filter 0.15s ease;
+}
+
+.photoGridItem:hover {
+  transform: scale(1.06);
 }
 
 .photoGridItem:hover img {
-  transform: scale(1.06);
   filter: brightness(1);
 }

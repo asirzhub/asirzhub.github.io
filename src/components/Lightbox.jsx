@@ -1,28 +1,34 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import styles from '../styles/Lightbox.module.css'
+import tagsData from '../data/tags.json'
 
-function formatDateTaken(exif) {
-  // Only trust DateTimeOriginal — the actual shutter-press timestamp.
-  // DateTime is often the file-write date; DateTimeDigitized is scanner/import time.
+function getYear(exif) {
   const v = exif?.DateTimeOriginal
   if (!v) return null
-  if (v instanceof Date)
-    return v.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-  // Raw string form: "YYYY:MM:DD HH:MM:SS"
-  const m = String(v).match(/^(\d{4}):(\d{2}):(\d{2})/)
-  if (!m) return null
-  return new Date(`${m[1]}-${m[2]}-${m[3]}`).toLocaleDateString('en-US', {
-    year: 'numeric', month: 'long', day: 'numeric',
-  })
+  if (v instanceof Date) return String(v.getFullYear())
+  const m = String(v).match(/^(\d{4})/)
+  return m ? m[1] : null
+}
+
+function formatCamera(exif) {
+  const make = exif?.Make?.trim()
+  const model = exif?.Model?.trim()
+  if (!model && !make) return null
+  if (!model) return make
+  if (!make) return model
+  if (model.toLowerCase().startsWith(make.toLowerCase())) return model
+  return `${make} ${model}`
 }
 
 export default function Lightbox({ images, initialIndex, onClose }) {
   const [index, setIndex] = useState(initialIndex)
   const [exifData, setExifData] = useState(null)
-  const [maxSize, setMaxSize] = useState(() => window.innerHeight - 150)
+  const calcMaxSize = () => Math.min(window.innerHeight - 150, window.innerWidth - 120)
+  const [maxSize, setMaxSize] = useState(calcMaxSize)
   const touchStartX = useRef(null)
 
   const current = images[index]
+  const tagEntry = tagsData[current.key] ?? {}
 
   // Lock body scroll while open
   useEffect(() => {
@@ -33,7 +39,7 @@ export default function Lightbox({ images, initialIndex, onClose }) {
 
   // Recompute max size on resize
   useEffect(() => {
-    const onResize = () => setMaxSize(window.innerHeight - 150)
+    const onResize = () => setMaxSize(calcMaxSize())
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
   }, [])
@@ -45,7 +51,9 @@ export default function Lightbox({ images, initialIndex, onClose }) {
     ;(async () => {
       try {
         const { parse } = await import('exifr')
-        const data = await parse(current.src, { pick: ['DateTimeOriginal'] })
+        const data = await parse(current.src, {
+          pick: ['DateTimeOriginal', 'Make', 'Model', 'LensModel']
+        })
         if (!cancelled) setExifData(data ?? {})
       } catch {
         if (!cancelled) setExifData({})
@@ -97,54 +105,59 @@ export default function Lightbox({ images, initialIndex, onClose }) {
     touchStartX.current = null
   }
 
+  const year   = exifData ? getYear(exifData) : null
+  const camera = exifData ? formatCamera(exifData) : null
+  const lens   = exifData?.LensModel?.trim() || null
+  const film   = tagEntry.film || null
+  const tags   = tagEntry.tags || []
+  const metaFields = [year, camera, lens, film].filter(Boolean)
+
   return (
     <div className={styles.wrapper}>
-      {/* Glowing background thumbnail — sits under the dimmer */}
-      <div className={styles.bg}>
-        <img src={current.src} alt="" className={styles.bgImg} draggable={false} />
-      </div>
       <div className={styles.dimmer} />
 
-      {/* Clickable overlay — click anywhere here to close */}
       <div
         className={styles.content}
         onClick={onClose}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        {/* Date taken — top centre, only rendered when available */}
-        {formatDateTaken(exifData) && (
-          <div className={styles.dateLine} onClick={e => e.stopPropagation()}>
-            {formatDateTaken(exifData)}
+        <div className={styles.imageArea} onClick={e => e.stopPropagation()}>
+          <div className={styles.imgWrapper} style={{ '--max-size': `${maxSize}px` }}>
+            <img src={current.src} alt={current.alt} className={styles.img} draggable={false} />
+            <button className={styles.downloadBtn} onClick={handleDownload} aria-label="Download image">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3v13M5 13l7 7 7-7M3 21h18" />
+              </svg>
+              Download (3MP)
+            </button>
           </div>
-        )}
 
-        {/* Prev / image / next */}
-        <button
-          className={styles.navBtn}
-          onClick={e => { e.stopPropagation(); prev() }}
-          aria-label="Previous image"
-        >&#8249;</button>
+          {(metaFields.length > 0 || tags.length > 0) && (
+            <div className={styles.metaPanel}>
+              {metaFields.map((v, i) => (
+                <span key={i} className={styles.metaItem}>{v}</span>
+              ))}
+              {tags.map((t, i) => (
+                <span key={i} className={styles.tag}>{t}</span>
+              ))}
+            </div>
+          )}
 
-        <div
-          className={styles.imgWrapper}
-          style={{ width: maxSize, height: maxSize }}
-          onClick={e => e.stopPropagation()}
-        >
-          <img src={current.src} alt={current.alt} className={styles.img} draggable={false} />
-          <button className={styles.downloadBtn} onClick={handleDownload} aria-label="Download image">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 3v13M5 13l7 7 7-7M3 21h18" />
-            </svg>
-            Download
-          </button>
+          <div className={styles.controls}>
+            <button className={styles.navBtn} onClick={prev} aria-label="Previous image">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </button>
+            <button className={styles.closeBtn} onClick={onClose}>Close</button>
+            <button className={styles.navBtn} onClick={next} aria-label="Next image">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+          </div>
         </div>
-
-        <button
-          className={styles.navBtn}
-          onClick={e => { e.stopPropagation(); next() }}
-          aria-label="Next image"
-        >&#8250;</button>
       </div>
     </div>
   )

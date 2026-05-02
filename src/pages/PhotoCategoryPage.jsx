@@ -10,10 +10,14 @@ const allImages = import.meta.glob(
 function getImages(category) {
   return Object.entries(allImages)
     .filter(([path]) => path.includes(`/photography/${category}/`))
-    .map(([path, mod]) => ({
-      src: mod.default,
-      alt: path.split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '),
-    }))
+    .map(([path, mod]) => {
+      const filename = path.split('/').pop()
+      return {
+        src: mod.default,
+        alt: filename.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '),
+        key: `${category}/${filename}`,
+      }
+    })
 }
 
 function PhotoCategoryPage() {

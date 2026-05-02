@@ -29,7 +29,7 @@ export default function PersistentLayout() {
         crumbs={getCrumbs(location.pathname, params)}
         animKey={location.pathname}
       />
-      <div style={{ overflowX: 'hidden' }}>
+      <div style={{ overflow: 'hidden' }}>
         <div key={location.pathname} className={pageStyles[direction]}>
           <Outlet />
         </div>

@@ -1,36 +1,19 @@
 .navRow {
   position: relative;
-  height: 150px;
-  clip-path: inset(0);
+  height: clamp(80px, 20vw, 150px);
   display: block;
   text-decoration: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   cursor: pointer;
+  transition: box-shadow 0.2s ease;
 }
 
-@keyframes labelSlide {
-  from { transform: translateX(var(--nav-slide-from, 40%)); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
-}
-
-/* White fill sweeps in from left on hover */
-.navRow::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: #fff;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+.navRow:hover {
+  box-shadow: 0 0 60px rgb(0, 0, 0);
   z-index: 1;
 }
 
-.navRow:hover::before {
-  transform: scaleX(1);
-}
-
 .label {
-  text-shadow: #000000 0px 2px 2px;
   position: absolute;
   inset: 0;
   display: flex;
@@ -43,26 +26,22 @@
   background-position: center;
   -webkit-background-clip: text;
   background-clip: text;
-  color: #fff;
-  animation: labelSlide 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
-  transition: color 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  color: rgba(255, 255, 255, 0.6);
   z-index: 2;
   pointer-events: none;
   user-select: none;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
 }
 
 .navRow:hover .label {
-  text-shadow: none;
-  color: transparent;
+  color: #fff;
+  text-shadow: 0 0 24px rgb(255, 255, 255);
 }
 
-
-/* Unavailable state */
 .unavailable {
   cursor: not-allowed;
 }
 
-/* Persistent red tint sits above the bg, below the hover fill */
 .unavailable::after {
   content: '';
   position: absolute;
@@ -70,15 +49,4 @@
   background: rgba(160, 0, 0, 0.38);
   z-index: 0;
   pointer-events: none;
-  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Hover fill is red instead of white */
-.unavailable::before {
-  background: rgb(185, 38, 38);
-}
-
-/* Tint fades out as the red fill sweeps in */
-.unavailable:hover::after {
-  opacity: 0;
 }
