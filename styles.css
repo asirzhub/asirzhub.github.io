@@ -1,0 +1,194 @@
+@font-face {
+  font-family: 'Microgramma D Extended Bold';
+  src: url('fonts/FunnelDisplay-ExtraBold.ttf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-family: 'Microgramma D Extended Bold', Arial, sans-serif;
+  background: #000;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+/* ── Name header ── */
+.name-row {
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0c0c0c;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: clamp(1.8rem, 4.5vw, 3.8rem);
+  letter-spacing: 0.12em;
+}
+
+/* ── Nav row base ── */
+.nav-row {
+  position: relative;
+  height: 150px;
+  clip-path: inset(0);
+  display: block;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+}
+
+/* White fill sweeps in from left on hover */
+.nav-row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.nav-row:hover::before {
+  transform: scaleX(1);
+}
+
+/* ── Label ── */
+.label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: clamp(1.5rem, 5vw, 5rem);
+  font-family: inherit;
+  font-size: clamp(1.8rem, 4.5vw, 3.8rem);
+  letter-spacing: 0.12em;
+  background-size: cover;
+  background-position: center;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: #fff;
+  transition: color 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+  pointer-events: none;
+  user-select: none;
+}
+
+.nav-row:hover .label {
+  color: transparent;
+}
+
+/* ── Row backgrounds ── */
+.photo-row  { background: url('img/photography.jpg') center / cover no-repeat; }
+.threed-row { background: url('img/3d.png')          center / cover no-repeat; }
+.dev-row    { background: url('img/development.png') center / cover no-repeat; }
+
+/* ── Label background images (must match row to align the clip) ── */
+.photo-row  .label { background-image: url('img/photography.jpg'); }
+.threed-row .label { background-image: url('img/3d.png');          }
+.dev-row    .label { background-image: url('img/development.png'); }
+
+/* ── Unavailable ── */
+.unavailable {
+  cursor: not-allowed;
+}
+
+/* Persistent red tint sits above the bg, below the hover fill */
+.unavailable::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(160, 0, 0, 0.38);
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover fill is red instead of white */
+.unavailable::before {
+  background: rgb(185, 38, 38);
+}
+
+/* Tint fades out as the red fill sweeps in */
+.unavailable:hover::after {
+  opacity: 0;
+}
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  padding: 0 clamp(1.5rem, 5vw, 5rem);
+  background: #0c0c0c;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: clamp(0.85rem, 2vw, 1.4rem);
+  letter-spacing: 0.12em;
+  gap: 0.6em;
+}
+
+.breadcrumb a {
+  color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb a:hover {
+  color: #fff;
+}
+
+.breadcrumb .sep {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.breadcrumb .current {
+  color: #fff;
+}
+
+/* ── Photography category rows ── */
+.event-row        { background: url('img/placeholder-event.svg')        center / cover no-repeat; }
+.nature-row       { background: url('img/placeholder-nature.svg')       center / cover no-repeat; }
+.architecture-row { background: url('img/placeholder-architecture.svg') center / cover no-repeat; }
+.street-row       { background: url('img/placeholder-street.svg')       center / cover no-repeat; }
+.misc-row         { background: url('img/placeholder-misc.svg')         center / cover no-repeat; }
+
+.event-row        .label { background-image: url('img/placeholder-event.svg'); }
+.nature-row       .label { background-image: url('img/placeholder-nature.svg'); }
+.architecture-row .label { background-image: url('img/placeholder-architecture.svg'); }
+.street-row       .label { background-image: url('img/placeholder-street.svg'); }
+.misc-row         .label { background-image: url('img/placeholder-misc.svg'); }
+
+/* ── Photo grid ── */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2px;
+  padding: 2px;
+}
+
+.photo-grid-item {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.photo-grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.85);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.photo-grid-item:hover img {
+  transform: scale(1.06);
+  filter: brightness(1);
+}

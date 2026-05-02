@@ -1,0 +1,20 @@
+@font-face {
+  font-family: 'FunnelDisplay ExtraBold';
+  src: url('/fonts/FunnelDisplay-ExtraBold.ttf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-size: 1.5rem;
+  font-family: 'FunnelDisplay ExtraBold', Arial, sans-serif;
+  background: #000;
+  color: #fff;
+  text-transform: uppercase;
+}
