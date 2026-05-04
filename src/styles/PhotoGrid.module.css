@@ -1,3 +1,38 @@
+.gridWrapper {
+  position: relative;
+  min-height: 50vh;
+}
+
+.loadBarTrack {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.loadBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 35%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.75);
+  animation: loadBar 0.75s ease-in-out infinite;
+  transition: background 0.3s ease;
+}
+
+.loadBarDim {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes loadBar {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
 .photoGrid {
   display: flex;
   flex-wrap: wrap;
@@ -17,7 +52,12 @@
   width: auto;
   display: block;
   filter: brightness(0.85);
-  transition: filter 0.15s ease;
+  opacity: 0;
+  transition: filter 0.15s ease, opacity 0.3s ease;
+}
+
+.photoGridItem img.imgVisible {
+  opacity: 1;
 }
 
 .photoGridItem:hover {

@@ -2,7 +2,7 @@ import { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import styles from '../styles/Breadcrumb.module.css'
 
-function Breadcrumb({ crumbs, animKey }) {
+function Breadcrumb({ crumbs, description, animKey }) {
   return (
     <div className={styles.breadcrumb}>
       <span key={animKey} className={styles.crumbsFade}>
@@ -16,6 +16,11 @@ function Breadcrumb({ crumbs, animKey }) {
           </Fragment>
         ))}
       </span>
+      {description && (
+        <span key={animKey + '-desc'} className={styles.description}>
+          {description}
+        </span>
+      )}
     </div>
   )
 }

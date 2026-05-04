@@ -7,14 +7,14 @@
   padding-left: clamp(1.5rem, 5vw, 5rem);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   background: #0c0c0c;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   color: #fff;
 }
 
 .crumbsFade {
   display: inline-flex;
   align-items: center;
-  gap: 0.6em;
+  gap: 0.2em;
 }
 
 .breadcrumb a {
@@ -32,4 +32,15 @@
 
 .current {
   color: #fff;
+}
+
+.description {
+  position: absolute;
+  top: 75%;
+  transform: translateY(-50%);
+  left: clamp(1.5rem, 5vw, 5rem);
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  pointer-events: none;
 }
